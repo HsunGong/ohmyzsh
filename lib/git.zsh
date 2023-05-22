@@ -52,7 +52,10 @@ function parse_git_dirty() {
         FLAGS+="--ignore-submodules=${GIT_STATUS_IGNORE_SUBMODULES:-dirty}"
         ;;
     esac
-    STATUS=$(__git_prompt_git status ${FLAGS} 2> /dev/null | tail -n 1)
+#    STATUS=$(__git_prompt_git status ${FLAGS} 2> /dev/null | tail -n1)
+#     STATUS=$(GIT_OPTIONAL_LOCKS=0 timeout 0.2s command git "$@" status ${FLAGS}  2> /dev/null | tail -n1)
+    STATUS=$(GIT_OPTIONAL_LOCKS=0 timeout 0.2s command git "$@" status ${FLAGS}  2> /dev/null)
+    if [ $? -ne 0 ]; then STATUS="-1"; fi
   fi
   if [[ -n $STATUS ]]; then
     echo "$ZSH_THEME_GIT_PROMPT_DIRTY"
